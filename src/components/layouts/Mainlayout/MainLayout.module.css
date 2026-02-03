@@ -1,0 +1,147 @@
+.gridContainer {
+    display: grid;
+    width: 100vw;
+    height: 100vh;
+    grid-template-rows: 100px 1fr 100px;
+    grid-template-areas:
+        "header"
+        "main"
+        "footer"
+}
+
+.item1 {
+    grid-area: header;
+    background-color: green;
+    display: grid;
+    grid-template-columns: 100px 500px 100px;
+    grid-template-areas: "icon head info";
+    justify-content: center;
+    align-content: center;
+    height: 100%;
+    text-align: center;
+}
+
+
+.fileIcon {
+    grid-area: icon;
+    background-color: orange;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+
+
+}
+
+.H1header {
+    grid-area: head;
+    padding: 15px;
+    background-color: red;
+}
+
+.info {
+    grid-area: info;
+    padding: 15px;
+    background-color: blue;
+
+}
+
+.item2 {
+    grid-area: main;
+    background-color: blue;
+}
+
+.item3 {
+    grid-area: footer;
+    background-color: red;
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    font-size: 20px;
+}
+
+.twoElementsContainer {
+    display: grid;
+    height: 100%;
+    grid-template-columns: 200px 200px;
+    grid-template-areas:
+        "box1 box2";
+    justify-content: center;
+    align-items: center;
+}
+
+.elementOne {
+    grid-area: box1;
+    background-color: darkgoldenrod;
+    padding: 5px;
+    text-align: center;
+    transition: 0.8s ease-in-out;
+    border-radius: 10px;
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    gap: 5px;
+
+
+
+}
+
+
+.elementOne:hover {
+    transition: 0.5s ease-in-out;
+    transform: translateY(-5px) scale(1.02);
+    background-color: lawngreen;
+
+    box-shadow: 3px 3px 5px 1px grey;
+
+
+
+}
+
+.elementTwo {
+    grid-area: box2;
+    background-color: darkblue;
+    padding: 5px;
+    text-align: center;
+    transition: 0.8s ease-in-out;
+    border-radius: 10px;
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    gap: 5px;
+
+
+}
+
+
+.elementTwo:hover {
+    transition: 0.5s ease-in-out;
+    transform: translateY(-5px) scale(1.02);
+    background-color: lightblue;
+    box-shadow: 3px 3px 5px 1px grey;
+}
+
+@media screen and (max-width: 600px) {
+    .twoElementsContainer {
+        display: flex;
+        flex-direction: column;
+
+
+        align-items: center;
+        justify-content: center;
+
+
+        height: 100vh;
+
+
+    }
+}
