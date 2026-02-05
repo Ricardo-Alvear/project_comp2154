@@ -11,7 +11,7 @@
 
 .item1 {
     grid-area: header;
-    background-color: green;
+    background-color: #1E293B;
     display: grid;
     grid-template-columns: 100px 500px 100px;
     grid-template-areas: "icon head info";
@@ -22,38 +22,36 @@
 }
 
 
-.fileIcon {
-    grid-area: icon;
-    background-color: orange;
-    padding: 15px;
-    display: flex;
-    justify-content: center;
-    align-content: center;
-
-
-}
-
 .H1header {
     grid-area: head;
-    padding: 15px;
-    background-color: red;
+
+        color: white;
+        
+
+    align-content: center;
+ 
+}
+
+button {
+    background-color: #1F46E8;
+    cursor: pointer;
 }
 
 .info {
     grid-area: info;
     padding: 15px;
-    background-color: blue;
-
+    background-color: #F8FAFC;
 }
 
 .item2 {
     grid-area: main;
-    background-color: blue;
+    background-color: #FFFFFF;
 }
 
 .item3 {
     grid-area: footer;
-    background-color: red;
+    background-color: #0F172A;
+    color: white;
     display: flex;
 
     align-items: center;
@@ -66,21 +64,26 @@
 .twoElementsContainer {
     display: grid;
     height: 100%;
-    grid-template-columns: 200px 200px;
+    grid-template-columns: repeat(300px, 3);
     grid-template-areas:
-        "box1 box2";
+        "box1 box2 box3";
+    gap: 100px;
     justify-content: center;
     align-items: center;
+
+    margin: auto;
 }
 
 .elementOne {
     grid-area: box1;
-    background-color: darkgoldenrod;
+    background-color: #F1F5F9;
     padding: 5px;
     text-align: center;
     transition: 0.8s ease-in-out;
     border-radius: 10px;
-    cursor: pointer;
+    height: 300px;
+    width: 300px;
+
 
     display: flex;
     flex-direction: column;
@@ -88,46 +91,122 @@
     align-content: center;
     gap: 5px;
 
-
+    box-shadow: 0 2px 2px 3px grey;
 
 }
 
 
 .elementOne:hover {
-    transition: 0.5s ease-in-out;
+    transition: 0.2s ease-in-out;
     transform: translateY(-5px) scale(1.02);
-    background-color: lawngreen;
+    background-color: #E2E8F0;
 
-    box-shadow: 3px 3px 5px 1px grey;
+        box-shadow: 0 2px 2px 5px grey;
 
 
 
 }
 
+.elementOne span {
+    color: #4F46E5;
+
+    font-size: 4rem;
+
+    transition: 0.5s ease-in-out;
+}
+
+.elementOne:hover span {
+    color: #3730A3;
+
+    transition: 0.2s ease-in-out;
+    
+}
+
+.elementTwo span {
+    color: #4F46E5;
+
+    font-size: 4rem;
+
+    transition: 0.2s ease-in-out;
+}
+
+.elementTwo:hover span {
+    color: #3730A3;
+
+    transition: 0.2s ease-in-out;
+}
+
+
 .elementTwo {
     grid-area: box2;
-    background-color: darkblue;
+    background-color: #F1F5F9;
     padding: 5px;
     text-align: center;
     transition: 0.8s ease-in-out;
     border-radius: 10px;
-    cursor: pointer;
+    height: fit-content;
+    height: 300px;
+    width: 300px;
+
 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-content: center;
     gap: 5px;
-
+    box-shadow: 0 2px 2px 3px grey;
 
 }
 
 
 .elementTwo:hover {
-    transition: 0.5s ease-in-out;
+    transition: 0.2s ease-in-out;
     transform: translateY(-5px) scale(1.02);
-    background-color: lightblue;
-    box-shadow: 3px 3px 5px 1px grey;
+    background-color: #E2E8F0;
+    box-shadow: 0 2px 2px 5px grey;
+}
+
+.elementThree {
+    grid-area: box3;
+    background-color: #F1F5F9;
+    padding: 5px;
+    text-align: center;
+    transition: 0.8s ease-in-out;
+    border-radius: 10px;
+    height: fit-content;
+    height: 300px;
+    width: 300px;
+
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    gap: 5px;
+    box-shadow: 0 2px 2px 3px grey;
+
+}
+
+
+.elementThree:hover {
+    transition: 0.2s ease-in-out;
+    transform: translateY(-5px) scale(1.02);
+    background-color: #E2E8F0;
+    box-shadow: 0 2px 2px 5px grey;
+}
+
+.elementThree span {
+    color: #4F46E5;
+
+    font-size: 4rem;
+
+    transition: 0.2s ease-in-out;
+}
+
+.elementThree:hover span {
+    color: #3730A3;
+
+    transition: 0.2s ease-in-out;
 }
 
 @media screen and (max-width: 600px) {
