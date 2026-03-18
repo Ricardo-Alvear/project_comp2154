@@ -1,10 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
 import { LockKeyhole, Mail, ShieldCheck } from 'lucide-react';
 import { Header } from '../../components/header/Header';
 import { Footer } from '../../components/footer/Footer';
-import { Link } from 'react-router-dom';
 
 export function Login() {
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const navigate = useNavigate();
+
+	// inside Login.jsx
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		try {
+			const response = await axios.post(
+				'http://localhost:5001/api/v1/auth/login',
+				{ email, password },
+			);
+
+			if (response.data.token) {
+				// Save token
+				localStorage.setItem('token', response.data.token);
+				// Verify it saved before navigating
+				console.log('Token saved successfully');
+				navigate('/dashboard');
+			}
+		} catch (error) {
+			console.error('Login error:', error);
+			alert(error.response?.data?.message || 'Authorization failed.');
+		}
+	};
+
 	return (
 		<div className='grid grid-rows-[100px_1fr_100px] w-screen h-screen overflow-hidden bg-[#FDFDFD] font-sans'>
 			<header className='bg-slate-800 flex items-center justify-center px-8 border-b border-slate-700'>
@@ -15,7 +42,10 @@ export function Login() {
 
 			<main className='bg-white flex items-center justify-center p-6'>
 				<section className='w-full max-w-[420px] bg-slate-50 border border-slate-200 rounded-[2.5rem] p-10 shadow-2xl'>
-					<div className='flex flex-col items-center'>
+					<form
+						onSubmit={handleSubmit}
+						className='flex flex-col items-center'
+					>
 						<div className='mb-6 p-4 bg-blue-600 text-white rounded-2xl shadow-lg shadow-blue-500/20'>
 							<LockKeyhole size={32} />
 						</div>
@@ -34,6 +64,8 @@ export function Login() {
 									className='w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all shadow-sm'
 									type='email'
 									placeholder='Email Address'
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
 									required
 								/>
 							</div>
@@ -47,6 +79,10 @@ export function Login() {
 									className='w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all shadow-sm'
 									type='password'
 									placeholder='Password'
+									value={password}
+									onChange={(e) =>
+										setPassword(e.target.value)
+									}
 									required
 								/>
 							</div>
@@ -75,7 +111,7 @@ export function Login() {
 							/>
 							Encrypted Session Verified
 						</div>
-					</div>
+					</form>
 				</section>
 			</main>
 

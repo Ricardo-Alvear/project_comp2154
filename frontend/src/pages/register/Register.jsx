@@ -1,10 +1,35 @@
-import React from 'react';
-import { LockKeyhole, Mail, ShieldCheck, UserPlus } from 'lucide-react';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { LockKeyhole, Mail, UserPlus } from 'lucide-react';
 import { Header } from '../../components/header/Header';
 import { Footer } from '../../components/footer/Footer';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export function Register() {
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const navigate = useNavigate();
+
+	const handleRegister = async (e) => {
+		e.preventDefault();
+		try {
+			await axios.post('http://localhost:5001/api/v1/auth/register', {
+				email,
+				password,
+			});
+			alert(
+				'Registration successful! Please log in with your new credentials.',
+			);
+			navigate('/login');
+		} catch (error) {
+			console.error('Registration error:', error);
+			alert(
+				error.response?.data?.message ||
+					'Registration failed. Please try again.',
+			);
+		}
+	};
+
 	return (
 		<div className='grid grid-rows-[100px_1fr_100px] w-screen h-screen overflow-hidden bg-[#FDFDFD] font-sans'>
 			<header className='bg-slate-800 flex items-center justify-center px-8 border-b border-slate-700'>
@@ -15,7 +40,10 @@ export function Register() {
 
 			<main className='bg-white flex items-center justify-center p-6'>
 				<section className='w-full max-w-[420px] bg-slate-50 border border-slate-200 rounded-[2.5rem] p-10 shadow-2xl'>
-					<div className='flex flex-col items-center'>
+					<form
+						onSubmit={handleRegister}
+						className='flex flex-col items-center'
+					>
 						<div className='mb-6 p-4 bg-blue-600 text-white rounded-2xl shadow-lg shadow-blue-500/20'>
 							<UserPlus size={32} />
 						</div>
@@ -34,6 +62,8 @@ export function Register() {
 									className='w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all shadow-sm'
 									type='email'
 									placeholder='Email Address'
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
 									required
 								/>
 							</div>
@@ -47,6 +77,10 @@ export function Register() {
 									className='w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all shadow-sm'
 									type='password'
 									placeholder='Create Password'
+									value={password}
+									onChange={(e) =>
+										setPassword(e.target.value)
+									}
 									required
 								/>
 							</div>
@@ -67,7 +101,7 @@ export function Register() {
 								Already have an account? Login
 							</Link>
 						</div>
-					</div>
+					</form>
 				</section>
 			</main>
 

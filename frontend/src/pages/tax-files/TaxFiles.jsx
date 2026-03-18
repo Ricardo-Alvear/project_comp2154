@@ -1,33 +1,76 @@
 import React from 'react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 import { FileDown, ShieldCheck, FolderArchive, Search } from 'lucide-react';
 
 export function TaxFiles() {
-	const taxDocuments = [
-		{
-			year: '2025',
-			type: 'Annual Return',
-			status: 'Verified',
-			id: 'TX-2025-001',
-		},
-		{
-			year: '2024',
-			type: 'Annual Return',
-			status: 'Archived',
-			id: 'TX-2024-004',
-		},
-		{
-			year: '2025',
-			type: 'Quarterly Est.',
-			status: 'Verified',
-			id: 'TX-2025-Q1',
-		},
-	];
+	const [taxDocuments, setTaxDocuments] = useState([]);
+
+	// Fetch the real records from MongoDB on load
+	useEffect(() => {
+		const fetchRecords = async () => {
+			try {
+				const response = await axios.get(
+					'http://localhost:5001/api/v1/tax-records',
+					{
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem('token')}`,
+						},
+					},
+				);
+				setTaxDocuments(response.data); // Set the actual DB records
+			} catch (err) {
+				console.error('Failed to fetch records', err);
+			}
+		};
+		fetchRecords();
+	}, []);
+
+	// inside TaxFiles.jsx
+	const handleDownload = async (id, type, year) => {
+		try {
+			const token = localStorage.getItem('token');
+
+			// Debugging: Check if token exists in console
+			console.log('Attempting download with token:', token);
+
+			if (!token) {
+				alert('Session expired. Please log in again.');
+				return;
+			}
+
+			const response = await axios({
+				url: `http://localhost:5001/api/v1/tax-records/download/${id}`,
+				method: 'GET',
+				responseType: 'blob',
+				headers: {
+					// Ensure this matches exactly what your auth.js middleware expects
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			const url = window.URL.createObjectURL(new Blob([response.data]));
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute(
+				'download',
+				`${type.replace(/\s+/g, '_')}_${year}.pdf`,
+			);
+			document.body.appendChild(link);
+			link.click();
+			link.remove();
+			window.URL.revokeObjectURL(url);
+		} catch (error) {
+			console.error('Download failed:', error);
+			// If the error is 401 or 403, it means the token was rejected by auth.js
+			alert(
+				'Access Denied: Please log in to download financial records.',
+			);
+		}
+	};
 
 	return (
-		/* Notice: No <MainLayout> wrapper here! 
-           The wrapper is already handled by App.jsx and <Outlet /> */
 		<div className='w-full animate-in fade-in slide-in-from-bottom-4 duration-700'>
-			{/* Page Header Area */}
 			<div className='flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-slate-100 pb-8'>
 				<div>
 					<h1 className='text-4xl font-serif font-black tracking-tighter text-slate-900 uppercase'>
@@ -37,7 +80,6 @@ export function TaxFiles() {
 						Access and download your verified financial records
 					</p>
 				</div>
-
 				<div className='flex gap-2'>
 					<div className='relative'>
 						<Search
@@ -53,7 +95,6 @@ export function TaxFiles() {
 				</div>
 			</div>
 
-			{/* Document Grid */}
 			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
 				{taxDocuments.map((doc, i) => (
 					<div
@@ -82,7 +123,12 @@ export function TaxFiles() {
 							<div className='flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-emerald-500'>
 								<ShieldCheck size={14} /> {doc.status}
 							</div>
-							<button className='flex items-center gap-2 px-4 py-2 bg-blue-600 text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-md hover:bg-blue-700 transition-all'>
+							<button
+								onClick={() =>
+									handleDownload(doc.id, doc.type, doc.year)
+								}
+								className='flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-md hover:bg-blue-700 transition-all'
+							>
 								<FileDown size={16} /> Download
 							</button>
 						</div>

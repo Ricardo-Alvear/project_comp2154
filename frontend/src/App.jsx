@@ -11,19 +11,16 @@ function App() {
 	return (
 		<BrowserRouter>
 			<Routes>
-				{/* 1. Auth Routes (Stay outside the layout) */}
-				<Route path='/login' element={<Login />} />
+				{/* Entry Point redirects to Register */}
+				<Route path='/' element={<Navigate to='/register' />} />
+
 				<Route path='/register' element={<Register />} />
+				<Route path='/login' element={<Login />} />
 
-				{/* 2. Layout Wrapper (The "Parent" Route) */}
-				<Route path='/' element={<MainLayout />}>
-					{/* Default path redirects to /home */}
-					<Route index element={<Navigate to='/home' />} />
-
-					{/* The Dashboard (Home) - MainLayout handles the "null" children case */}
-					<Route path='home' element={null} />
-
-					{/* These pages will now show INSIDE the MainLayout white area */}
+				{/* Dashboard Parent Route */}
+				<Route path='/dashboard' element={<MainLayout />}>
+					{/* The index route represents the "Home" view with 3 boxes */}
+					<Route index element={null} />
 					<Route path='tax-files' element={<TaxFiles />} />
 					<Route
 						path='notifications'
@@ -34,6 +31,9 @@ function App() {
 						element={<FileTrackingProgressPage />}
 					/>
 				</Route>
+
+				{/* Catch-all redirect */}
+				<Route path='*' element={<Navigate to='/register' />} />
 			</Routes>
 		</BrowserRouter>
 	);
