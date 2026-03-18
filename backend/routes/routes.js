@@ -1,7 +1,13 @@
 import express from 'express';
-import { allBooks, getBooks, sendBooks } from '../controllers/controllers.js';
-const routes = express.Router();
+const router = express.Router();
+import {
+	getAllNotifications,
+	createNotification,
+	deleteNotification,
+	updateNotification,
+} from '../controllers/notificationsControllers.js';
 
-routes.route('/').get(getBooks).get(allBooks).post(sendBooks);
+router.route('/').get(getAllNotifications).post(createNotification);
+router.route('/:id').delete(deleteNotification).patch(updateNotification);
 
-export default routes;
+export default router;
