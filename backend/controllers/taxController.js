@@ -42,3 +42,12 @@ export const downloadTaxFile = async (req, res) => {
 		});
 	}
 };
+
+export const getAllTaxRecords = async (req, res) => {
+	try {
+		const records = await TaxRecord.find({}); 
+		res.status(200).json(records);
+	} catch (error) {
+		res.status(500).json({ message: 'Error fetching records' });
+	}
+};

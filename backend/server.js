@@ -10,14 +10,20 @@ import routes from './routes/routes.js';
 
 const server = express();
 
-server.use(cors());
+server.use(
+	cors({
+		origin: 'http://localhost:5173', 
+		methods: ['GET', 'POST', 'PUT', 'DELETE'],
+		allowedHeaders: ['Content-Type', 'Authorization'],
+	}),
+);
 server.use(express.json());
 
 const MONGO_URI = process.env.MONGO_URI;
 const PORT = process.env.PORT;
 
-// Mount authentication routes
-server.use('/api/v1/auth', authRoutes); // Added
+
+server.use('/api/v1/auth', authRoutes);
 server.use('/api/v1/notifications', routes);
 server.use('/api/v1/tax-records', taxRoutes);
 

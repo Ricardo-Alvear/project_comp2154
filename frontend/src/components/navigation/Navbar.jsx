@@ -3,9 +3,9 @@ import { Link, useLocation } from 'react-router-dom';
 export function NavbarC() {
 	const location = useLocation();
 	const navLinks = [
-		{ name: 'Home', path: '/home' },
-		{ name: 'Progress', path: '/file-tracking-progress' },
-		{ name: 'Files', path: '/tax-files' },
+		{ name: 'Home', path: '/dashboard' }, 
+		{ name: 'Progress', path: '/dashboard/file-tracking-progress' },
+		{ name: 'Files', path: '/dashboard/tax-files' },
 	];
 
 	return (
