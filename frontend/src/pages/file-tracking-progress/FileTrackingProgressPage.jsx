@@ -102,7 +102,7 @@ export function FileTrackingProgressPage() {
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Last Download
             </p>
-            <p className="text-2xl font-serif font-black text-slate-900 text-sm">
+            <p className="text-2xl font-serif font-black text-slate-900">
               {downloadHistory.length > 0
                 ? new Date(downloadHistory[0].downloadDate).toLocaleDateString()
                 : "No Activity"}
