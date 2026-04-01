@@ -13,16 +13,17 @@ export function TaxFiles() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Use Vite environment variable for the API base URL
+  // Fallback to localhost:5001 for local development
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+
   useEffect(() => {
     const fetchRecords = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(
-          "http://localhost:5001/api/v1/tax-records",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        const response = await axios.get(`${API_BASE_URL}/api/v1/tax-records`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setTaxDocuments(response.data);
       } catch (err) {
         console.error("Failed to fetch records", err);
@@ -31,7 +32,7 @@ export function TaxFiles() {
       }
     };
     fetchRecords();
-  }, []);
+  }, [API_BASE_URL]);
 
   const handleDownload = async (id, type, year) => {
     try {
@@ -41,9 +42,9 @@ export function TaxFiles() {
         return;
       }
 
-      // 1. Fetch the file blob
+      // 1. Fetch the file blob from the dynamic URL
       const response = await axios({
-        url: `http://localhost:5001/api/v1/tax-records/download/${id}`,
+        url: `${API_BASE_URL}/api/v1/tax-records/download/${id}`,
         method: "GET",
         responseType: "blob",
         headers: { Authorization: `Bearer ${token}` },
@@ -60,13 +61,12 @@ export function TaxFiles() {
       link.remove();
       window.URL.revokeObjectURL(url);
 
-      // 3. LOG THE DOWNLOAD TO DATABASE
-      // This ensures the FileTrackingProgressPage can see this activity
+      // 3. LOG THE DOWNLOAD TO DATABASE via dynamic URL
       await axios.post(
-        "http://localhost:5001/api/v1/tax-records/log",
+        `${API_BASE_URL}/api/v1/tax-records/log`,
         {
           fileName: fileName,
-          fileSize: (response.data.size / 1024 / 1024).toFixed(2) + " MB", // Dynamic size calculation
+          fileSize: (response.data.size / 1024 / 1024).toFixed(2) + " MB",
         },
         {
           headers: { Authorization: `Bearer ${token}` },

@@ -15,20 +15,27 @@ const DownloadLogSchema = new mongoose.Schema(
       type: String,
       required: [true, "User email is required to track ownership"],
       lowercase: true,
-      index: true, // Speeds up queries when fetching history for a specific user
+      index: true,
+      // Added a simple regex match to ensure no malformed emails hit your logs
+      match: [
+        /^^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        "Please provide a valid email address",
+      ],
     },
     downloadDate: {
       type: Date,
       default: Date.now,
-      index: true, // Speeds up "Sort by Date" on the Progress Page
+      index: true,
     },
   },
   {
-    timestamps: true, // Automatically adds createdAt and updatedAt fields
+    // timestamps are great for knowing exactly when a record was created vs when the action happened
+    timestamps: true,
   },
 );
 
-// Create a compound index if you ever want to find a specific file for a specific user faster
+// Compound index for the "Recent Activity" view
+// This allows MongoDB to find "Ricardo's" logs and sort them by "Date" in a single step
 DownloadLogSchema.index({ userEmail: 1, downloadDate: -1 });
 
 export default mongoose.model("DownloadLog", DownloadLogSchema);

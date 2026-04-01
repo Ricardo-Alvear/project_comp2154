@@ -9,93 +9,95 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
- * GET: Fetch all available tax records from the vault
+ * GET: Fetch all available tax records
  */
 export const getAllTaxRecords = async (req, res) => {
   try {
-    const records = await TaxRecord.find({});
+    // We only want records that belong to the user or are public
+    // If your TaxRecord model doesn't have a user field yet, this fetches all.
+    const records = await TaxRecord.find({}).sort({ year: -1 });
     res.status(200).json(records);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching records" });
+    console.error("Fetch Records Error:", error);
+    res.status(500).json({ message: "Error fetching records from the vault." });
   }
 };
 
 /**
- * GET: Download a specific file by its custom ID (e.g., TX-2025-001)
+ * GET: Download a specific file
  */
 export const downloadTaxFile = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // 1. Find the record in MongoDB
     const record = await TaxRecord.findOne({ id });
 
     if (!record) {
       return res.status(404).json({ message: "Record not found in database." });
     }
 
-    // 2. Construct path
-    // We use path.resolve to ensure we are getting an absolute path
-    const filePath = path.resolve(
+    // Construct path using path.join for cross-platform compatibility (Windows vs Linux)
+    const filePath = path.join(
       __dirname,
-      "../uploads/tax_records",
+      "..",
+      "uploads",
+      "tax_records",
       record.fileName,
     );
 
-    // 3. Check if file exists on disk
+    // Check if file exists on disk before attempting download
     if (!fs.existsSync(filePath)) {
-      console.error(`File missing at: ${filePath}`);
-      return res
-        .status(404)
-        .json({ message: "Physical file missing from server." });
+      console.error(`MISSING FILE: ${filePath}`);
+      return res.status(404).json({
+        message: "The physical document is not present on the server storage.",
+      });
     }
 
-    // 4. Stream the download to the client
-    res.download(filePath, record.fileName);
-  } catch (error) {
-    res.status(500).json({
-      message: "Server error during download",
-      error: error.message,
+    // Stream the download
+    // res.download automatically sets Content-Disposition and Content-Type headers
+    res.download(filePath, record.fileName, (err) => {
+      if (err) {
+        console.error("Download Stream Error:", err);
+        // Don't send another response if headers were already sent
+        if (!res.headersSent) {
+          res.status(500).json({ message: "Could not transmit file." });
+        }
+      }
     });
+  } catch (error) {
+    console.error("Download Error:", error);
+    res.status(500).json({ message: "Server error during download process." });
   }
 };
 
 /**
- * POST: Log a successful download event for tracking
+ * POST: Log a successful download event
  */
 export const logDownload = async (req, res) => {
   try {
     const { fileName, fileSize } = req.body;
 
-    // Check if req.user exists (provided by authenticateJWT)
     if (!req.user || !req.user.email) {
-      return res
-        .status(401)
-        .json({ message: "User identity not found in token." });
+      return res.status(401).json({ message: "Identity verification failed." });
     }
 
     const newLog = new DownloadLog({
       fileName,
       fileSize,
       userEmail: req.user.email,
-      downloadDate: new Date(), // Explicitly set current date
+      downloadDate: new Date(),
     });
 
     await newLog.save();
-    console.log(`Log saved for ${req.user.email}: ${fileName}`); // Check your terminal for this!
-
-    res.status(201).json({ message: "Download successfully logged" });
+    res.status(201).json({ message: "Activity logged to secure audit trail." });
   } catch (error) {
-    console.error("Log Error:", error.message);
-    res.status(500).json({
-      message: "Failed to log activity",
-      error: error.message,
-    });
+    console.error("Logging Error:", error);
+    res.status(500).json({ message: "Audit log failed." });
   }
 };
 
 /**
- * GET: Retrieve all download history for the current user
+ * GET: Retrieve download history for the current user
  */
 export const getDownloadLogs = async (req, res) => {
   try {
@@ -103,12 +105,14 @@ export const getDownloadLogs = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized access." });
     }
 
+    // Filter logs strictly by the user's email from the JWT
     const logs = await DownloadLog.find({ userEmail: req.user.email }).sort({
       downloadDate: -1,
     });
 
     res.status(200).json(logs);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching activity logs" });
+    console.error("Fetch Logs Error:", error);
+    res.status(500).json({ message: "Error fetching activity logs." });
   }
 };

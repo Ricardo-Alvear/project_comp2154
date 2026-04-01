@@ -6,7 +6,6 @@ import {
   Database,
   HardDrive,
   Clock,
-  Download,
   Loader2,
 } from "lucide-react";
 
@@ -14,12 +13,17 @@ export function FileTrackingProgressPage() {
   const [downloadHistory, setDownloadHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Use Vite environment variable for the API base URL
+  // Fallback to localhost:5001 for local development
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+
   useEffect(() => {
     const fetchHistory = async () => {
       try {
         const token = localStorage.getItem("token");
+        // Dynamically use the API_BASE_URL based on environment
         const response = await axios.get(
-          "http://localhost:5001/api/v1/tax-records/logs",
+          `${API_BASE_URL}/api/v1/tax-records/logs`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -32,7 +36,7 @@ export function FileTrackingProgressPage() {
       }
     };
     fetchHistory();
-  }, []);
+  }, [API_BASE_URL]);
 
   // Calculate total storage from the logs
   const totalStorage = downloadHistory
